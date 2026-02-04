@@ -1,0 +1,10 @@
+FROM postgis/postgis:17-3.4
+
+# Copy custom PostgreSQL config
+COPY postgresql.conf /usr/share/postgresql/postgresql.conf.sample
+
+# Install pgvector and timescaledb
+RUN apt-get update && apt-get install -y \
+    postgresql-17-pgvector \
+    postgresql-17-timescaledb \
+    && rm -rf /var/lib/apt/lists/*
