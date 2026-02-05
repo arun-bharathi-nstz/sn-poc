@@ -78,6 +78,15 @@ async function seed() {
           is_active: true,
         },
         {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a09",
+          email: "vendor3@supplynow.test",
+          first_name: "Sunny",
+          last_name: "Vendor",
+          phone: "555-0109",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+        },
+        {
           id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a05",
           email: "driver1@supplynow.test",
           first_name: "Dina",
@@ -113,6 +122,24 @@ async function seed() {
           role: UserRole.CUSTOMER,
           is_active: true,
         },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a10",
+          email: "customer3@supplynow.test",
+          first_name: "Noah",
+          last_name: "Customer",
+          phone: "555-0110",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a11",
+          email: "customer4@supplynow.test",
+          first_name: "Gina",
+          last_name: "Customer",
+          phone: "555-0111",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
       ],
       ["email"]
     );
@@ -141,6 +168,7 @@ async function seed() {
           email: "sunrisebake@supplynow.test",
           phone: "555-0203",
           isActive: true,
+          user_id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a09",
         },
       ],
       ["email"]
@@ -286,12 +314,14 @@ async function seed() {
           name: "North Beach Deli",
           phone: "555-0403",
           is_active: true,
+          user_id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a10",
         },
         {
           id: "4b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0e04",
           name: "Golden Gate Hotel",
           phone: "555-0404",
           is_active: true,
+          user_id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a11",
         },
       ],
       ["id"]

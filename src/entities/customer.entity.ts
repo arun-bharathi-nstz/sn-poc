@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Vendor } from './vendor.entity';
 
 @Entity('customers')
 export class Customer {
@@ -35,4 +37,7 @@ export class Customer {
 
   @Column({ nullable: true })
   user_id?: string;
+
+  @OneToMany(() => Vendor, (vendor) => vendor.customers)
+  vendors?: Vendor[];
 }

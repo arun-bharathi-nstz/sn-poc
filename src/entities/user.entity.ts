@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Vendor } from './vendor.entity';
+import { Customer } from './customer.entity';
 
 export enum UserRole {
   SUPER_ADMIN = 'super_admin',
@@ -51,4 +52,7 @@ export class User {
 
   @OneToMany(() => Vendor, (vendor) => vendor.user)
   vendors?: Vendor[];
+
+  @OneToMany(() => Customer, (customer) => customer.user)
+  customers?: Customer[];
 }

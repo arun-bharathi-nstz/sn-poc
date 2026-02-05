@@ -8,6 +8,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "seed": "ts-node -r dotenv/config src/seed.ts",
+    "db:migrate": "bash scripts/db-migrate.sh",
+    "db:reset": "bash scripts/db-reset.sh",
     "build": "nest build",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest"

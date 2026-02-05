@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { VendorLocation } from './vendor-location.entity';
+import { Customer } from './customer.entity';
 
 @Entity('vendors')
 export class Vendor {
@@ -43,4 +44,7 @@ export class Vendor {
 
   @OneToMany(() => VendorLocation, (location) => location.vendor)
   locations?: VendorLocation[];
+
+  @OneToMany(() => Customer, (customer) => customer.vendors)
+  customers?: Customer[];
 }
