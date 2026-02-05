@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export type TableType = 'table' | 'material_view';
+export type TableType = 'table' | 'materialized_view';
 
 @Entity('table_semantics')
 export class TableSemantics {
