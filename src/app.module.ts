@@ -13,6 +13,7 @@ import { Driver } from "./entities/driver.entity";
 import { Customer } from "./entities/customer.entity";
 import { TableSemantics } from "./entities/table-semantics.entity";
 import { Order } from "./entities/order.entity";
+import { RlsModule } from "./rls/rls.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { Order } from "./entities/order.entity";
       synchronize: true, // Set to false in production
       logging: true,
     }),
+    RlsModule,
     SnAgentModule,
     TableSemanticsModule,
   ],

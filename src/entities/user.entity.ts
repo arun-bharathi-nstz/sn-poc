@@ -44,6 +44,12 @@ export class User {
   @Column({ default: true })
   is_active!: boolean;
 
+  @Column({ nullable: true })
+  vendor_id?: string;
+
+  @Column({ nullable: true })
+  vendor_location_id?: string;
+
   @CreateDateColumn()
   created_at!: Date;
 
