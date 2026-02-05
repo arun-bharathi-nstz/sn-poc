@@ -3,23 +3,30 @@ import { TableSemanticsService } from './table-semantics.service';
 
 @Controller('table-semantics')
 export class TableSemanticsController {
-  constructor(private readonly tableSemanticsService: TableSemanticsService) {}
+  constructor(private readonly tableSemanticsService: TableSemanticsService) { }
 
   /**
-   * Generate embedding for table_semantics table
-   * Converts all table semantics records to text and generates embedding
+   * Generate embeddings for table_semantics AND all other tables
    * POST /table-semantics/generate-embedding
    */
   @Post('generate-embedding')
-  async generateTableSemanticsEmbedding(): Promise<{
+  async generateAllEmbeddings(): Promise<{
     success: boolean;
-    tableName: string;
-    recordsProcessed: number;
-    embeddingGenerated: boolean;
-    embeddingDimension: number;
+    tableSemantics: {
+      tableName: string;
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    };
+    tables: Array<{
+      tableName: string;
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    }>;
     timestamp: string;
   }> {
-    return this.tableSemanticsService.generateTableSemanticsEmbeddings();
+    return this.tableSemanticsService.generateAllEmbeddings();
   }
 
   /**
