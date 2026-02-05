@@ -1,5 +1,7 @@
 import "dotenv/config";
 import { DataSource } from "typeorm";
+import * as fs from 'fs';
+import * as path from 'path';
 import { User, UserRole } from "./entities/user.entity";
 import { Vendor } from "./entities/vendor.entity";
 import { VendorLocation } from "./entities/vendor-location.entity";
@@ -31,6 +33,8 @@ async function seed() {
   await dataSource.initialize();
 
   await dataSource.transaction(async (manager) => {
+    await manager.query(`SET LOCAL app.role = 'super_admin';`);
+
     const userRepo = manager.getRepository(User);
     const vendorRepo = manager.getRepository(Vendor);
     const locationRepo = manager.getRepository(VendorLocation);
@@ -42,14 +46,111 @@ async function seed() {
     // ---------- Users ----------
     await userRepo.upsert(
       [
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a01", email: "admin@supplynow.test", first_name: "Ava", last_name: "Admin", phone: "555-0101", role: UserRole.SUPER_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a02", email: "vendor1@supplynow.test", first_name: "Victor", last_name: "Vendor", phone: "555-0102", role: UserRole.VENDOR_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a03", email: "vendor2@supplynow.test", first_name: "Vera", last_name: "Vendor", phone: "555-0103", role: UserRole.VENDOR_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a04", email: "locadmin@supplynow.test", first_name: "Liam", last_name: "Location", phone: "555-0104", role: UserRole.VENDOR_LOCATION_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a05", email: "driver1@supplynow.test", first_name: "Dina", last_name: "Driver", phone: "555-0105", role: UserRole.DRIVER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a06", email: "driver2@supplynow.test", first_name: "Diego", last_name: "Driver", phone: "555-0106", role: UserRole.DRIVER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a07", email: "customer1@supplynow.test", first_name: "Casey", last_name: "Customer", phone: "555-0107", role: UserRole.CUSTOMER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a08", email: "customer2@supplynow.test", first_name: "Carmen", last_name: "Customer", phone: "555-0108", role: UserRole.CUSTOMER, is_active: true },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a01",
+          email: "admin@supplynow.test",
+          first_name: "Ava",
+          last_name: "Admin",
+          phone: "555-0101",
+          role: UserRole.SUPER_ADMIN,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a02",
+          email: "vendor1@supplynow.test",
+          first_name: "Victor",
+          last_name: "Vendor",
+          phone: "555-0102",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a03",
+          email: "vendor2@supplynow.test",
+          first_name: "Vera",
+          last_name: "Vendor",
+          phone: "555-0103",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a04",
+          email: "locadmin@supplynow.test",
+          first_name: "Liam",
+          last_name: "Location",
+          phone: "555-0104",
+          role: UserRole.VENDOR_LOCATION_ADMIN,
+          is_active: true,
+          vendor_location_id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a09",
+          email: "vendor3@supplynow.test",
+          first_name: "Sunny",
+          last_name: "Vendor",
+          phone: "555-0109",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a05",
+          email: "driver1@supplynow.test",
+          first_name: "Dina",
+          last_name: "Driver",
+          phone: "555-0105",
+          role: UserRole.DRIVER,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a06",
+          email: "driver2@supplynow.test",
+          first_name: "Diego",
+          last_name: "Driver",
+          phone: "555-0106",
+          role: UserRole.DRIVER,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a07",
+          email: "customer1@supplynow.test",
+          first_name: "Casey",
+          last_name: "Customer",
+          phone: "555-0107",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a08",
+          email: "customer2@supplynow.test",
+          first_name: "Carmen",
+          last_name: "Customer",
+          phone: "555-0108",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a10",
+          email: "customer3@supplynow.test",
+          first_name: "Noah",
+          last_name: "Customer",
+          phone: "555-0110",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a11",
+          email: "customer4@supplynow.test",
+          first_name: "Gina",
+          last_name: "Customer",
+          phone: "555-0111",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
       ],
       ["email"]
     );
@@ -169,6 +270,33 @@ async function seed() {
       WHERE status = 'delivered';
     `);
   });
+
+  // Apply RLS policies using raw psql command
+  console.log('Applying RLS policies...');
+  const { execSync } = require('child_process');
+  
+  const host = process.env.DB_HOST || 'localhost';
+  const port = process.env.DB_PORT || '5432';
+  const user = process.env.DB_USERNAME || 'postgres';
+  const db = process.env.DB_NAME || 'supplynow';
+  const password = process.env.DB_PASSWORD || '';
+  
+  const env = { ...process.env };
+  if (password) {
+    env.PGPASSWORD = password;
+  }
+  
+  try {
+    execSync(
+      `psql -h "${host}" -p "${port}" -U "${user}" -d "${db}" -f "${path.join(__dirname, './rls/rls-policies.sql')}"`,
+      { env, stdio: 'inherit' }
+    );
+    console.log('RLS policies applied successfully.');
+  } catch (error) {
+    console.error('Failed to apply RLS policies:', error);
+    // Continue anyway - RLS can be applied manually
+    console.log('You can apply RLS manually with: pnpm rls:migrate');
+  }
 
   await dataSource.destroy();
 }

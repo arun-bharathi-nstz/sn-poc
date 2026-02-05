@@ -10,6 +10,7 @@
     "seed": "ts-node -r dotenv/config src/seed.ts",
     "db:migrate": "bash scripts/db-migrate.sh",
     "db:reset": "bash scripts/db-reset.sh",
+    "rls:migrate": "ts-node -r dotenv/config src/rls/migrate-rls.ts",
     "build": "nest build",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest"
