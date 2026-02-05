@@ -1,5 +1,8 @@
 -- Enable required PostgreSQL extensions for AI-ready order processing system
 
+-- Set postgres user password
+ALTER USER postgres WITH PASSWORD 'root';
+
 -- PostGIS for geospatial queries
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS postgis_topology;
