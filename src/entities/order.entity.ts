@@ -48,4 +48,6 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+  @Column({ type: 'simple-json', nullable: true })
+  embed?: number[];
 }

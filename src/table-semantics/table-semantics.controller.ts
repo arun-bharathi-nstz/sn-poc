@@ -3,7 +3,7 @@ import { TableSemanticsService } from './table-semantics.service';
 
 @Controller('table-semantics')
 export class TableSemanticsController {
-  constructor(private readonly tableSemanticsService: TableSemanticsService) {}
+  constructor(private readonly tableSemanticsService: TableSemanticsService) { }
 
   /**
    * Generate embedding for table_semantics table
@@ -19,7 +19,16 @@ export class TableSemanticsController {
     embeddingDimension: number;
     timestamp: string;
   }> {
-    return this.tableSemanticsService.generateTableSemanticsEmbeddings();
+    // Only returns table_semantics info
+    const result = await this.tableSemanticsService.generateTableSemanticsEmbeddings();
+    return {
+      success: result.success,
+      tableName: result.tableSemantics.tableName,
+      recordsProcessed: result.tableSemantics.recordsProcessed,
+      embeddingGenerated: result.tableSemantics.embeddingGenerated,
+      embeddingDimension: result.tableSemantics.embeddingDimension,
+      timestamp: result.timestamp,
+    };
   }
 
   /**

@@ -49,26 +49,43 @@ export class TableSemanticsService {
    */
   async generateTableSemanticsEmbeddings(): Promise<{
     success: boolean;
-    tableName: string;
-    recordsProcessed: number;
-    embeddingGenerated: boolean;
-    embeddingDimension: number;
+    tableSemantics: {
+      tableName: string;
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    };
+    orders: {
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    };
     timestamp: string;
   }> {
     try {
-      const result = await this.generateEmbeddingForTableSemantics();
+      const tableResult = await this.generateEmbeddingForTableSemantics();
+      const orderResult = await this.generateEmbeddingForOrders();
+
       return {
         success: true,
-        ...result,
+        tableSemantics: tableResult,
+        orders: orderResult,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
       return {
         success: false,
-        tableName: 'table_semantics',
-        recordsProcessed: 0,
-        embeddingGenerated: false,
-        embeddingDimension: 0,
+        tableSemantics: {
+          tableName: 'table_semantics',
+          recordsProcessed: 0,
+          embeddingGenerated: false,
+          embeddingDimension: 0,
+        },
+        orders: {
+          recordsProcessed: 0,
+          embeddingGenerated: false,
+          embeddingDimension: 0,
+        },
         timestamp: new Date().toISOString(),
       };
     }
@@ -79,13 +96,13 @@ export class TableSemanticsService {
    * Fetches all table semantics records, generates individual embeddings for each,
    * and stores them in the embed column
    */
+  // Existing method for table_semantics
   private async generateEmbeddingForTableSemantics(): Promise<{
     tableName: string;
     recordsProcessed: number;
     embeddingGenerated: boolean;
     embeddingDimension: number;
   }> {
-    // Fetch all table semantics records
     const allTableSemantics = await this.tableSemanticsRepository.find();
 
     if (allTableSemantics.length === 0) {
@@ -100,35 +117,24 @@ export class TableSemanticsService {
     let embeddingDimension = 0;
     let successCount = 0;
 
-    // Generate embedding for each table semantics record individually
     for (const tableSemantics of allTableSemantics) {
       try {
-        // Convert individual table to text
         const tableText = `Table: ${tableSemantics.name}\n` +
           `Type: ${tableSemantics.type}\n` +
-          (tableSemantics.description
-            ? `Description: ${tableSemantics.description}\n`
-            : '') +
+          (tableSemantics.description ? `Description: ${tableSemantics.description}\n` : '') +
           `Columns: ${tableSemantics.columns.join(', ')}\n`;
 
-        // Generate embedding for this table
         const embeddingResult = await this.aiService.textToEmbedding(tableText);
 
-        // Store embedding in the record
         tableSemantics.embed = embeddingResult.embedding;
         await this.tableSemanticsRepository.save(tableSemantics);
 
         embeddingDimension = embeddingResult.embedding.length;
         successCount++;
 
-        console.log(
-          `✓ Generated embedding for table: ${tableSemantics.name}`,
-        );
+        console.log(`✓ Generated embedding for table: ${tableSemantics.name}`);
       } catch (error) {
-        console.error(
-          `✗ Failed to generate embedding for table: ${tableSemantics.name}`,
-          error,
-        );
+        console.error(`✗ Failed to generate embedding for table: ${tableSemantics.name}`, error);
       }
     }
 
@@ -139,6 +145,55 @@ export class TableSemanticsService {
       embeddingDimension,
     };
   }
+
+  // New method for orders
+  private async generateEmbeddingForOrders(): Promise<{
+    recordsProcessed: number;
+    embeddingGenerated: boolean;
+    embeddingDimension: number;
+  }> {
+    const allOrders = await this.orderRepository.find();
+
+    if (allOrders.length === 0) {
+      return {
+        recordsProcessed: 0,
+        embeddingGenerated: false,
+        embeddingDimension: 0,
+      };
+    }
+
+    let embeddingDimension = 0;
+    let successCount = 0;
+
+    for (const order of allOrders) {
+      try {
+        const orderText = `Order Number: ${order.order_number}\n` +
+          `Status: ${order.status}\n` +
+          `Total Amount: ${order.total_amount}\n` +
+          (order.customer_id ? `Customer ID: ${order.customer_id}\n` : '') +
+          (order.vendor_id ? `Vendor ID: ${order.vendor_id}\n` : '');
+
+        const embeddingResult = await this.aiService.textToEmbedding(orderText);
+
+        order.embed = embeddingResult.embedding;
+        await this.orderRepository.save(order);
+
+        embeddingDimension = embeddingResult.embedding.length;
+        successCount++;
+
+        console.log(`✓ Generated embedding for order: ${order.order_number}`);
+      } catch (error) {
+        console.error(`✗ Failed to generate embedding for order: ${order.order_number}`, error);
+      }
+    }
+
+    return {
+      recordsProcessed: successCount,
+      embeddingGenerated: successCount > 0,
+      embeddingDimension,
+    };
+  }
+
 
   /**
    * Get all table semantics with their current embedding status
