@@ -1,6 +1,10 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { AiController } from "./ai/ai.controller";
+import { AiService } from "./ai/ai.service";
+import { SnAgentModule } from "./sn-agent/sn-agent.module";
+import { TableSemanticsModule } from "./table-semantics/table-semantics.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Vendor } from "./entities/vendor.entity";
@@ -31,8 +35,10 @@ import { Order } from "./entities/order.entity";
       synchronize: true, // Set to false in production
       logging: true,
     }),
+    SnAgentModule,
+    TableSemanticsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AiController],
+  providers: [AppService, AiService],
 })
 export class AppModule {}
