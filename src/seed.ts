@@ -354,59 +354,40 @@ async function seed() {
     await semanticsRepo.upsert(
       [
         {
-          id: "6b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a1001",
-          name: "users",
-          type: "table",
-          description: "Application users with roles",
-          columns: [
-            "id",
-            "email",
-            "first_name",
-            "last_name",
-            "role",
-            "is_active",
-            "created_at",
-            "updated_at",
-          ],
-          embed: [0.12, 0.34, 0.56],
-        },
-        {
-          id: "6b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a1002",
-          name: "vendors",
-          type: "table",
-          description: "Suppliers and vendors",
-          columns: [
-            "id",
-            "name",
-            "email",
-            "phone",
-            "isActive",
-            "createdAt",
-            "updatedAt",
-            "user_id",
-          ],
-          embed: [0.22, 0.44, 0.66],
-        },
-        {
-          id: "6b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a1003",
+          id: "6b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a2001",
           name: "orders",
-          type: "table",
-          description: "Customer orders",
-          columns: [
-            "id",
-            "order_number",
-            "customer_id",
-            "vendor_id",
-            "status",
-            "total_amount",
-            "createdAt",
-            "updatedAt",
-          ],
-          embed: [0.18, 0.27, 0.39],
+          type: "materialized_view",
+          description:
+            "CREATE MATERIALIZED VIEW pending_orders AS SELECT * FROM orders WHERE status = 'pending';",
+          columns: ["status", "created_at"],
+          embed: undefined,
+        },
+        {
+          id: "6b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a2002",
+          name: "orders",
+          type: "materialized_view",
+          description:
+            "CREATE MATERIALIZED VIEW completed_orders AS SELECT * FROM orders WHERE status = 'completed';",
+          columns: ["status", "created_at"],
+          embed: undefined,
         },
       ],
       ["id"]
     );
+
+    await manager.query(`
+      CREATE MATERIALIZED VIEW IF NOT EXISTS pending_orders AS
+      SELECT *
+      FROM orders
+      WHERE status = 'pending';
+    `);
+
+    await manager.query(`
+      CREATE MATERIALIZED VIEW IF NOT EXISTS delivered_orders AS
+      SELECT *
+      FROM orders
+      WHERE status = 'delivered';
+    `);
   });
 
   await dataSource.destroy();
