@@ -6,29 +6,27 @@ export class TableSemanticsController {
   constructor(private readonly tableSemanticsService: TableSemanticsService) { }
 
   /**
-   * Generate embedding for table_semantics table
-   * Converts all table semantics records to text and generates embedding
+   * Generate embeddings for table_semantics AND all other tables
    * POST /table-semantics/generate-embedding
    */
   @Post('generate-embedding')
-  async generateTableSemanticsEmbedding(): Promise<{
+  async generateAllEmbeddings(): Promise<{
     success: boolean;
-    tableName: string;
-    recordsProcessed: number;
-    embeddingGenerated: boolean;
-    embeddingDimension: number;
+    tableSemantics: {
+      tableName: string;
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    };
+    tables: Array<{
+      tableName: string;
+      recordsProcessed: number;
+      embeddingGenerated: boolean;
+      embeddingDimension: number;
+    }>;
     timestamp: string;
   }> {
-    // Only returns table_semantics info
-    const result = await this.tableSemanticsService.generateTableSemanticsEmbeddings();
-    return {
-      success: result.success,
-      tableName: result.tableSemantics.tableName,
-      recordsProcessed: result.tableSemantics.recordsProcessed,
-      embeddingGenerated: result.tableSemantics.embeddingGenerated,
-      embeddingDimension: result.tableSemantics.embeddingDimension,
-      timestamp: result.timestamp,
-    };
+    return this.tableSemanticsService.generateAllEmbeddings();
   }
 
   /**
