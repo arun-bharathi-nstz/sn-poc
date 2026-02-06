@@ -2,7 +2,7 @@
   "name": "poc-sn-app",
   "version": "0.0.1",
   "private": true,
-  "description": "NestJS app for PoC with Postgres RLS",
+  "description": "NestJS app for PoC with AI-powered query agent",
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",

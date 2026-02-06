@@ -5,6 +5,7 @@ import { AiController } from "./ai/ai.controller";
 import { AiService } from "./ai/ai.service";
 import { SnAgentModule } from "./sn-agent/sn-agent.module";
 import { TableSemanticsModule } from "./table-semantics/table-semantics.module";
+import { OrdersModule } from "./orders/orders.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Vendor } from "./entities/vendor.entity";
@@ -37,6 +38,7 @@ import { Order } from "./entities/order.entity";
     }),
     SnAgentModule,
     TableSemanticsModule,
+    OrdersModule,
   ],
   controllers: [AppController, AiController],
   providers: [AppService, AiService],

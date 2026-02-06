@@ -1,5 +1,7 @@
 import "dotenv/config";
 import { DataSource } from "typeorm";
+import * as fs from 'fs';
+import * as path from 'path';
 import { User, UserRole } from "./entities/user.entity";
 import { Vendor } from "./entities/vendor.entity";
 import { VendorLocation } from "./entities/vendor-location.entity";
@@ -31,6 +33,8 @@ async function seed() {
   await dataSource.initialize();
 
   await dataSource.transaction(async (manager) => {
+    await manager.query(`SET LOCAL app.role = 'super_admin';`);
+
     const userRepo = manager.getRepository(User);
     const vendorRepo = manager.getRepository(Vendor);
     const locationRepo = manager.getRepository(VendorLocation);
@@ -42,14 +46,111 @@ async function seed() {
     // ---------- Users ----------
     await userRepo.upsert(
       [
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a01", email: "admin@supplynow.test", first_name: "Ava", last_name: "Admin", phone: "555-0101", role: UserRole.SUPER_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a02", email: "vendor1@supplynow.test", first_name: "Victor", last_name: "Vendor", phone: "555-0102", role: UserRole.VENDOR_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a03", email: "vendor2@supplynow.test", first_name: "Vera", last_name: "Vendor", phone: "555-0103", role: UserRole.VENDOR_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a04", email: "locadmin@supplynow.test", first_name: "Liam", last_name: "Location", phone: "555-0104", role: UserRole.VENDOR_LOCATION_ADMIN, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a05", email: "driver1@supplynow.test", first_name: "Dina", last_name: "Driver", phone: "555-0105", role: UserRole.DRIVER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a06", email: "driver2@supplynow.test", first_name: "Diego", last_name: "Driver", phone: "555-0106", role: UserRole.DRIVER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a07", email: "customer1@supplynow.test", first_name: "Casey", last_name: "Customer", phone: "555-0107", role: UserRole.CUSTOMER, is_active: true },
-        { id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a08", email: "customer2@supplynow.test", first_name: "Carmen", last_name: "Customer", phone: "555-0108", role: UserRole.CUSTOMER, is_active: true },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a01",
+          email: "admin@supplynow.test",
+          first_name: "Ava",
+          last_name: "Admin",
+          phone: "555-0101",
+          role: UserRole.SUPER_ADMIN,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a02",
+          email: "vendor1@supplynow.test",
+          first_name: "Victor",
+          last_name: "Vendor",
+          phone: "555-0102",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a03",
+          email: "vendor2@supplynow.test",
+          first_name: "Vera",
+          last_name: "Vendor",
+          phone: "555-0103",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a04",
+          email: "locadmin@supplynow.test",
+          first_name: "Liam",
+          last_name: "Location",
+          phone: "555-0104",
+          role: UserRole.VENDOR_LOCATION_ADMIN,
+          is_active: true,
+          vendor_location_id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a09",
+          email: "vendor3@supplynow.test",
+          first_name: "Sunny",
+          last_name: "Vendor",
+          phone: "555-0109",
+          role: UserRole.VENDOR_ADMIN,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a05",
+          email: "driver1@supplynow.test",
+          first_name: "Dina",
+          last_name: "Driver",
+          phone: "555-0105",
+          role: UserRole.DRIVER,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a06",
+          email: "driver2@supplynow.test",
+          first_name: "Diego",
+          last_name: "Driver",
+          phone: "555-0106",
+          role: UserRole.DRIVER,
+          is_active: true,
+          vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02",
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a07",
+          email: "customer1@supplynow.test",
+          first_name: "Casey",
+          last_name: "Customer",
+          phone: "555-0107",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a08",
+          email: "customer2@supplynow.test",
+          first_name: "Carmen",
+          last_name: "Customer",
+          phone: "555-0108",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a10",
+          email: "customer3@supplynow.test",
+          first_name: "Noah",
+          last_name: "Customer",
+          phone: "555-0110",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
+        {
+          id: "0b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0a11",
+          email: "customer4@supplynow.test",
+          first_name: "Gina",
+          last_name: "Customer",
+          phone: "555-0111",
+          role: UserRole.CUSTOMER,
+          is_active: true,
+        },
       ],
       ["email"]
     );
@@ -67,12 +168,12 @@ async function seed() {
     // ---------- Vendor Locations ----------
     await locationRepo.upsert(
       [
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c01", name: "Fresh Fields - Downtown", address: "101 Market St", city: "San Francisco", state: "CA", zip: "94105", latitude: 37.78921, longitude: -122.3969, phone: "555-0301", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01" },
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c02", name: "Fresh Fields - Mission", address: "220 Valencia St", city: "San Francisco", state: "CA", zip: "94103", latitude: 37.76882, longitude: -122.422, phone: "555-0302", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01" },
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c03", name: "Harbor Seafood - Pier 39", address: "Pier 39", city: "San Francisco", state: "CA", zip: "94133", latitude: 37.80867, longitude: -122.40982, phone: "555-0303", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02" },
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c04", name: "Harbor Seafood - Oakland", address: "55 Embarcadero W", city: "Oakland", state: "CA", zip: "94607", latitude: 37.7955, longitude: -122.2764, phone: "555-0304", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02" },
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c05", name: "Sunrise Bakery - SoMa", address: "700 Folsom St", city: "San Francisco", state: "CA", zip: "94107", latitude: 37.78233, longitude: -122.39718, phone: "555-0305", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03" },
-        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c06", name: "Sunrise Bakery - Daly City", address: "90 Mission St", city: "Daly City", state: "CA", zip: "94014", latitude: 37.70577, longitude: -122.47, phone: "555-0306", is_active: true, vendorId: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c01", name: "Fresh Fields - Downtown", address: "101 Market St", city: "San Francisco", state: "CA", zip: "94105", latitude: 37.78921, longitude: -122.3969, phone: "555-0301", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c02", name: "Fresh Fields - Mission", address: "220 Valencia St", city: "San Francisco", state: "CA", zip: "94103", latitude: 37.76882, longitude: -122.422, phone: "555-0302", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c03", name: "Harbor Seafood - Pier 39", address: "Pier 39", city: "San Francisco", state: "CA", zip: "94133", latitude: 37.80867, longitude: -122.40982, phone: "555-0303", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c04", name: "Harbor Seafood - Oakland", address: "55 Embarcadero W", city: "Oakland", state: "CA", zip: "94607", latitude: 37.7955, longitude: -122.2764, phone: "555-0304", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c05", name: "Sunrise Bakery - SoMa", address: "700 Folsom St", city: "San Francisco", state: "CA", zip: "94107", latitude: 37.78233, longitude: -122.39718, phone: "555-0305", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03" },
+        { id: "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c06", name: "Sunrise Bakery - Daly City", address: "90 Mission St", city: "Daly City", state: "CA", zip: "94014", latitude: 37.70577, longitude: -122.47, phone: "555-0306", is_active: true, vendor_id: "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03" },
       ],
       ["id"]
     );
@@ -111,6 +212,27 @@ async function seed() {
       "4b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0e03",
       "4b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0e04",
     ];
+    const driverIds = [
+      "3b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0d01",
+      "3b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0d02",
+      "3b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0d03",
+      null, // Some orders without assigned driver
+    ];
+    // Map vendor to their locations for proper RLS testing
+    const vendorLocationMap: Record<string, string[]> = {
+      "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b01": [
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c01",
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c02",
+      ],
+      "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b02": [
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c03",
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c04",
+      ],
+      "1b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0b03": [
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c05",
+        "2b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a0c06",
+      ],
+    };
 
     const orders: any[] = [];
     for (let i = 1; i <= 30; i++) {
@@ -118,12 +240,19 @@ async function seed() {
       const vendor_id = vendorIds[Math.floor(Math.random() * vendorIds.length)];
       const customer_id = customerIds[Math.floor(Math.random() * customerIds.length)];
       const total_amount = parseFloat((Math.random() * 500 + 20).toFixed(2));
+      const driver_id = driverIds[Math.floor(Math.random() * driverIds.length)];
+      
+      // Get a random vendor location for this vendor
+      const vendorLocations = vendorLocationMap[vendor_id];
+      const vendor_location_id = vendorLocations[Math.floor(Math.random() * vendorLocations.length)];
 
       orders.push({
         id: `5b8f4e55-7e0a-4f9e-9c7b-1e9f9c1a${(1000 + i).toString().padStart(2, "0")}`,
         order_number: `SN-${100000 + i}`,
         customer_id,
         vendor_id,
+        driver_id,
+        vendor_location_id,
         status,
         total_amount,
       });
