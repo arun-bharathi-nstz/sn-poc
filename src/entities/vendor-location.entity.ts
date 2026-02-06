@@ -48,9 +48,9 @@ export class VendorLocation {
   updated_at!: Date;
 
   @ManyToOne(() => Vendor, (vendor) => vendor.locations, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'vendorId' })
+  @JoinColumn({ name: 'vendor_id' })
   vendor!: Vendor;
 
-  @Column()
-  vendorId!: string;
+  @Column({ name: 'vendor_id' })
+  vendor_id!: string;
 }

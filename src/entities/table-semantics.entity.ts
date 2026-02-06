@@ -28,7 +28,7 @@ export class TableSemantics {
   @Column({ type: 'simple-array', default: '' })
   columns!: string[];
 
-  @Column({ type: 'simple-json', nullable: true })
+  @Column({ type: 'vector', length: 1536, nullable: true })
   embed?: number[];
 
   @CreateDateColumn()

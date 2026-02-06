@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Customer } from './customer.entity';
 import { Vendor } from './vendor.entity';
+import { Driver } from './driver.entity';
+import { VendorLocation } from './vendor-location.entity';
 
 export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
@@ -34,6 +36,20 @@ export class Order {
   @Column({ nullable: true })
   vendor_id?: string;
 
+  @ManyToOne(() => Driver, { nullable: true })
+  @JoinColumn({ name: 'driver_id' })
+  driver?: Driver;
+
+  @Column({ nullable: true })
+  driver_id?: string;
+
+  @ManyToOne(() => VendorLocation, { nullable: true })
+  @JoinColumn({ name: 'vendor_location_id' })
+  vendorLocation?: VendorLocation;
+
+  @Column({ nullable: true })
+  vendor_location_id?: string;
+
   @Column({
     type: 'varchar',
     default: 'pending',
@@ -48,6 +64,7 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-  @Column({ type: 'simple-json', nullable: true })
+
+  @Column({ type: 'vector', length: 1536, nullable: true })
   embed?: number[];
 }

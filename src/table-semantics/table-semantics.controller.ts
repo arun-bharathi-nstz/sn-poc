@@ -6,6 +6,19 @@ export class TableSemanticsController {
   constructor(private readonly tableSemanticsService: TableSemanticsService) { }
 
   /**
+   * Initialize/reset table semantics with correct column names
+   * POST /table-semantics/initialize
+   */
+  @Post('initialize')
+  async initializeTableSemantics(): Promise<{
+    success: boolean;
+    tablesInitialized: number;
+    message: string;
+  }> {
+    return this.tableSemanticsService.initializeTableSemantics();
+  }
+
+  /**
    * Generate embeddings for table_semantics AND all other tables
    * POST /table-semantics/generate-embedding
    */

@@ -5,6 +5,7 @@ import { AiController } from "./ai/ai.controller";
 import { AiService } from "./ai/ai.service";
 import { SnAgentModule } from "./sn-agent/sn-agent.module";
 import { TableSemanticsModule } from "./table-semantics/table-semantics.module";
+import { OrdersModule } from "./orders/orders.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Vendor } from "./entities/vendor.entity";
@@ -13,7 +14,6 @@ import { Driver } from "./entities/driver.entity";
 import { Customer } from "./entities/customer.entity";
 import { TableSemantics } from "./entities/table-semantics.entity";
 import { Order } from "./entities/order.entity";
-import { RlsModule } from "./rls/rls.module";
 
 @Module({
   imports: [
@@ -36,9 +36,9 @@ import { RlsModule } from "./rls/rls.module";
       synchronize: true, // Set to false in production
       logging: true,
     }),
-    RlsModule,
     SnAgentModule,
     TableSemanticsModule,
+    OrdersModule,
   ],
   controllers: [AppController, AiController],
   providers: [AppService, AiService],

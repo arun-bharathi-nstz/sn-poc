@@ -2,7 +2,7 @@
   "name": "poc-sn-app",
   "version": "0.0.1",
   "private": true,
-  "description": "NestJS app for PoC with Postgres RLS",
+  "description": "NestJS app for PoC with AI-powered query agent",
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -10,7 +10,6 @@
     "seed": "ts-node -r dotenv/config src/seed.ts",
     "db:migrate": "bash scripts/db-migrate.sh",
     "db:reset": "bash scripts/db-reset.sh",
-    "rls:migrate": "ts-node -r dotenv/config src/rls/migrate-rls.ts",
     "build": "nest build",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest"

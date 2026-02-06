@@ -137,6 +137,78 @@ export class TableSemanticsService {
   }
 
   /**
+   * Initialize table semantics with correct column names and descriptions
+   * This resets all table semantics and regenerates embeddings
+   */
+  async initializeTableSemantics() {
+    // Delete all existing
+    await this.tableSemanticsRepository.clear();
+
+    // Define all tables
+    const tables = [
+      {
+        name: 'vendors',
+        type: 'table',
+        description: 'Vendor companies that provide products and services. Each vendor is associated with a user who manages it.',
+        columns: ['id', 'name', 'email', 'phone', 'is_active', 'user_id', 'created_at', 'updated_at'],
+      },
+      {
+        name: 'vendor_locations',
+        type: 'table',
+        description: 'Physical store locations for vendors with address, coordinates, and contact information. Each location belongs to a vendor.',
+        columns: ['id', 'name', 'address', 'city', 'state', 'zip', 'latitude', 'longitude', 'phone', 'is_active', 'vendor_id', 'created_at', 'updated_at'],
+      },
+      {
+        name: 'orders',
+        type: 'table',
+        description: 'Customer orders containing order details, amounts, status, and relationships to vendors, customers, drivers, and vendor locations.',
+        columns: ['id', 'order_number', 'customer_id', 'vendor_id', 'driver_id', 'vendor_location_id', 'status', 'total_amount', 'created_at', 'updated_at'],
+      },
+      {
+        name: 'customers',
+        type: 'table',
+        description: 'Customer accounts for placing and managing orders.',
+        columns: ['id', 'name', 'phone', 'is_active', 'user_id', 'created_at', 'updated_at'],
+      },
+      {
+        name: 'drivers',
+        type: 'table',
+        description: 'Delivery drivers with license information, vehicle details, and availability status.',
+        columns: ['id', 'license_number', 'license_expiry_date', 'vehicle_number', 'vehicle_type', 'is_available', 'is_active', 'user_id', 'created_at', 'updated_at'],
+      },
+      {
+        name: 'users',
+        type: 'table',
+        description: 'System users with different roles: super_admin, vendor_admin, vendor_location_admin, driver, customer',
+        columns: ['id', 'email', 'first_name', 'last_name', 'phone', 'role', 'is_active', 'vendor_id', 'vendor_location_id', 'created_at', 'updated_at'],
+      },
+    ];
+
+    // Insert all tables
+    let successCount = 0;
+    for (const tableConfig of tables) {
+      try {
+        await this.tableSemanticsRepository.save({
+          name: tableConfig.name,
+          type: tableConfig.type as 'table' | 'materialized_view',
+          description: tableConfig.description,
+          columns: tableConfig.columns,
+        });
+        successCount++;
+        console.log(`✓ Initialized table semantics: ${tableConfig.name}`);
+      } catch (err) {
+        console.error(`✗ Failed to initialize ${tableConfig.name}:`, err);
+      }
+    }
+
+    return {
+      success: true,
+      tablesInitialized: successCount,
+      message: 'Call POST /table-semantics/generate-embedding to create embeddings',
+    };
+  }
+
+  /**
    * Get all table semantics with embedding info
    */
   async getAllTableSemantics() {
