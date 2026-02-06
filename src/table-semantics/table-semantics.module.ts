@@ -4,12 +4,8 @@ import { TableSemanticsService } from './table-semantics.service';
 import { TableSemanticsController } from './table-semantics.controller';
 import { TableSemantics } from '../entities/table-semantics.entity';
 import { User } from '../entities/user.entity';
-import { Vendor } from '../entities/vendor.entity';
-import { VendorLocation } from '../entities/vendor-location.entity';
-import { Driver } from '../entities/driver.entity';
-import { Customer } from '../entities/customer.entity';
-import { Order } from '../entities/order.entity';
 import { AiService } from '../ai/ai.service';
+import { Customer, Driver, Order, VendorLocation, Vendor } from 'src/entities';
 
 @Module({
   imports: [
@@ -27,4 +23,4 @@ import { AiService } from '../ai/ai.service';
   providers: [TableSemanticsService, AiService],
   exports: [TableSemanticsService],
 })
-export class TableSemanticsModule {}
+export class TableSemanticsModule { }
